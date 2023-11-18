@@ -26,7 +26,7 @@ namespace Renderer {
 		if (!success)
 		{
 			GLchar infoLog[1024];
-			glGetShaderInfoLog(m_ID, 1024, nullptr, infoLog);
+			glGetProgramInfoLog(m_ID, 1024, nullptr, infoLog);
 			std::cerr << "ERROR::SHADER: Link-time error: \n" << infoLog << std::endl;
 		}
 		else
