@@ -10,9 +10,9 @@ ResourceManager::ResourceManager(const std::string& executablePath) {
 	m_path = executablePath.substr(0, found);
 }
 
-std::string ResourceManager::getFileString(const std::string& relativeFilePath) {
+std::string ResourceManager::getFileString(const std::string& relativeFilePath) const{
 	std::fstream f;
-	f.open(m_path + "/" + relativeFilePath.c_str(), std::ios::binary);
+	f.open(m_path + "/" + relativeFilePath.c_str(), std::ios::in | std::ios::binary);
 	if (!f.is_open()) {
 		std::cerr << "Failed to open file: " << relativeFilePath << std::endl;
 		return std::string{};
@@ -23,7 +23,7 @@ std::string ResourceManager::getFileString(const std::string& relativeFilePath) 
 	return buffer.str();
 }
 
-std::shared_ptr<Renderer::ShaderProgram> ResourceManager::loadShader(const std::string& shaderName, const std::string& vertexPath, const std::string& fragmentPath) {
+std::shared_ptr<Renderer::ShaderProgram> ResourceManager::loadShaders(const std::string& shaderName, const std::string& vertexPath, const std::string& fragmentPath) {
 	std::string vertexString = getFileString(vertexPath);
 	if (vertexString.empty()) {
 		std::cerr << "No vertex shader!" << std::endl;
@@ -42,5 +42,16 @@ std::shared_ptr<Renderer::ShaderProgram> ResourceManager::loadShader(const std::
 	}
 	
 	std::cerr << "Can't load shader program: \n"
-		<< "Vertex: " << vertexPath << 
+		<< "Vertex: " << vertexPath << "\n"
+		<< "Fragment: " << fragmentPath << std::endl;
+	return nullptr;
+}
+
+std::shared_ptr<Renderer::ShaderProgram> ResourceManager::getShaderProgram(const std::string& shaderName) {
+	ShaderProgramsMap::const_iterator it = m_ShaderPrograms.find(shaderName);
+	if (it != m_ShaderPrograms.end()) {
+		return it->second;
+	}
+	std::cerr << "Can't find shader program: " << shaderName << std::endl;
+	return nullptr;
 }
